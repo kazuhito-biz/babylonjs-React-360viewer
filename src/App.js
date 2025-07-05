@@ -1,7 +1,7 @@
 import './App.css';
 
 import React from "react";
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder } from "@babylonjs/core";
+import {FreeCamera, Vector3, HemisphericLight, PhotoDome} from "@babylonjs/core";
 import SceneComponent from "./SceneComponent"; // uses above component in same directory
 // import SceneComponent from 'babylonjs-hook'; // if you install 'babylonjs-hook' NPM.
 
@@ -25,14 +25,7 @@ const onSceneReady = (scene) => {
   // Default intensity is 1. Let's dim the light a small amount
   light.intensity = 0.7;
 
-  // Our built-in 'box' shape.
-  box = MeshBuilder.CreateBox("box", { size: 2 }, scene);
-
-  // Move the box upward 1/2 its height
-  box.position.y = 1;
-
-  // Our built-in 'ground' shape.
-  MeshBuilder.CreateGround("ground", { width: 6, height: 6 }, scene);
+  const viewer = new PhotoDome("360Viewer", "./img/home.jpg", {}, scene);
 };
 
 /**
