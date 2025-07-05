@@ -24,12 +24,18 @@ export default ({ antialias, engineOptions, adaptToDeviceRatio, sceneOptions, on
         });
 
         const resize = () => {
+            canvas.style.width = `${window.innerWidth}px`
+            canvas.style.height = `${window.height}px`
+            canvas.style.aspectRatio = `${window.width} / ${window.height}`
             scene.getEngine().resize();
         };
 
         if (window) {
             window.addEventListener("resize", resize);
         }
+
+        // 初回のサイズ変更
+        resize();
 
         return () => {
             scene.getEngine().dispose();
