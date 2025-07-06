@@ -71,7 +71,7 @@ const onSceneReady = (scene) => {
 
   // 空間内ボタンを表示
   let gui3DManager = new GUI3DManager(scene);
-  createImitationButton(gui3DManager, "メッセージを表示");
+  createImitationButton(gui3DManager, "メッセージを表示", "メッセージ");
 
   // グリッドを表示
   advancedDynamicTexture.addControl(grid);
@@ -80,9 +80,10 @@ const onSceneReady = (scene) => {
 /**
  * 空間内ボタンを表示
  * @param gui3DManager
- * @param text
+ * @param text ボタンに表示するテキスト
+ * @param message ボタンクリック時のメッセージ
  */
-const createImitationButton = (gui3DManager, text) => {
+const createImitationButton = (gui3DManager, text, message) => {
   // 球形表示用のパネルを生成
   let panel = new SpherePanel();
   panel.position.set(0, 0, 0);
@@ -95,6 +96,9 @@ const createImitationButton = (gui3DManager, text) => {
   let button = new HolographicButton("3D Button");
   button.text = text;
   button.scaling = new Vector3(50, 50, 50);
+  button.onPointerClickObservable.add((e) => {
+    alert(message);
+  });
   panel.addControl(button);
   panel.blockLayout = false;
 }
