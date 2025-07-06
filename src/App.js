@@ -3,7 +3,16 @@ import './App.css';
 import React from "react";
 import {FreeCamera, Vector3, HemisphericLight, PhotoDome} from "@babylonjs/core";
 import SceneComponent from "./SceneComponent";
-import {AdvancedDynamicTexture, Button, Control, Grid, SelectionPanel} from "@babylonjs/gui";
+import {
+  AdvancedDynamicTexture,
+  Button,
+  Control,
+  Grid,
+  GUI3DManager,
+  HolographicButton,
+  SelectionPanel,
+  SpherePanel
+} from "@babylonjs/gui";
 // import SceneComponent from 'babylonjs-hook'; // if you install 'babylonjs-hook' NPM.
 
 let box;
@@ -60,9 +69,35 @@ const onSceneReady = (scene) => {
     grid.addControl(button, index, 0);
   });
 
+  // 空間内ボタンを表示
+  let gui3DManager = new GUI3DManager(scene);
+  createImitationButton(gui3DManager, "メッセージを表示");
+
   // グリッドを表示
   advancedDynamicTexture.addControl(grid);
 };
+
+/**
+ * 空間内ボタンを表示
+ * @param gui3DManager
+ * @param text
+ */
+const createImitationButton = (gui3DManager, text) => {
+  // 球形表示用のパネルを生成
+  let panel = new SpherePanel();
+  panel.position.set(0, 0, 0);
+  panel.radius = 500;
+  panel.margin = 0;
+  gui3DManager.addControl(panel);
+
+  // パネルへボタンを生成
+  panel.blockLayout = true;
+  let button = new HolographicButton("3D Button");
+  button.text = text;
+  button.scaling = new Vector3(50, 50, 50);
+  panel.addControl(button);
+  panel.blockLayout = false;
+}
 
 /**
  * Will run on every frame render.  We are spinning the box on y-axis.
