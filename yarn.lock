@@ -1110,6 +1110,11 @@
   resolved "https://registry.yarnpkg.com/@babylonjs/core/-/core-8.15.1.tgz#3e3a0628fe2326f387246cdaf95cb024eab065f6"
   integrity sha512-hs27fefMNvjvaeMhqTmnalbbxlbwYVkQE0h3OURTY0hyvjqHEObA91YCh6Zc7H2/h2HKEWVArcKz8VsfrWVU7g==
 
+"@babylonjs/gui@^8.15.1":
+  version "8.15.1"
+  resolved "https://registry.yarnpkg.com/@babylonjs/gui/-/gui-8.15.1.tgz#30497e927f19de0f794e7fe22318b94668d63773"
+  integrity sha512-/raOQNUxYJJMNkDJlwI/rkr4cJ0fCOblPp12rSgALc9/+E9rMTQGbfwl2uyGgbKHbaB1XBxt9xhclKLIuDxyrw==
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
