@@ -1,7 +1,7 @@
 import './App.css';
 
 import React from "react";
-import {FreeCamera, Vector3, HemisphericLight, PhotoDome} from "@babylonjs/core";
+import {FreeCamera, Vector3, HemisphericLight, PhotoDome, Space, TransformNode} from "@babylonjs/core";
 import SceneComponent from "./SceneComponent";
 import {
   AdvancedDynamicTexture,
@@ -71,7 +71,7 @@ const onSceneReady = (scene) => {
 
   // 空間内ボタンを表示
   let gui3DManager = new GUI3DManager(scene);
-  createImitationButton(gui3DManager, "メッセージを表示", "メッセージ");
+  createImitationButton(gui3DManager, "メッセージを表示", "メッセージ", 0, 27);
 
   // グリッドを表示
   advancedDynamicTexture.addControl(grid);
@@ -82,11 +82,26 @@ const onSceneReady = (scene) => {
  * @param gui3DManager
  * @param text ボタンに表示するテキスト
  * @param message ボタンクリック時のメッセージ
+ * @param x 縦方向の表示角度
+ * @param y 横方向の表示角度
  */
-const createImitationButton = (gui3DManager, text, message) => {
+const createImitationButton = (gui3DManager, text, message, x, y) => {
+  // 縦方向は最大90度になるよう調整
+  x = Math.max(Math.min(x, 90), -90) / 5.625;
+
+  // 横方向は最大180度になるよう調整
+  let absY = Math.abs(y);
+  if (180 < absY) {
+    y = 0 < y ? (-180 + (absY % 180)) : (180 - (absY % 180));
+  }
+  y = (y % 180) / 5.625;
+
+  // 角度と移動量の計算
+  let angle = Math.sqrt(x * x + y * y) / 10;
+  let axis = new Vector3(x, y, 0);
+
   // 球形表示用のパネルを生成
   let panel = new SpherePanel();
-  panel.position.set(0, 0, 0);
   panel.radius = 500;
   panel.margin = 0;
   gui3DManager.addControl(panel);
@@ -101,6 +116,12 @@ const createImitationButton = (gui3DManager, text, message) => {
   });
   panel.addControl(button);
   panel.blockLayout = false;
+
+  // 角度の変更
+  let pivot = new TransformNode("root");
+  pivot.position = new Vector3(0, 0, 0);
+  panel.node.parent = pivot;
+  pivot.rotate(axis, angle, Space.WORLD);
 }
 
 /**
