@@ -7,11 +7,25 @@ import {GUI3DManager, HolographicButton, SpherePanel} from "@babylonjs/gui";
 export class ImitationButton extends TransformNode {
   /**
    * ボタン表示用のパネル
+   *
+   * @type SpherePanel
    */
   panel;
 
-  constructor(name, scene, text, message, x, y) {
+  /**
+   * コンストラクタ
+   *
+   * @param {string} name オブジェクト名
+   * @param {Scene} scene シーン
+   * @param {ImitationButtonInfo} imitationButtonInfo ボタンへ表示する情報
+   */
+  constructor(name, scene, imitationButtonInfo) {
     super(name, scene);
+
+    let text = imitationButtonInfo.text;
+    let message = imitationButtonInfo.message;
+    let x = imitationButtonInfo.x;
+    let y = imitationButtonInfo.y;
 
     let gui3DManager = new GUI3DManager(scene);
 
