@@ -14,15 +14,33 @@ import {
   SpherePanel
 } from "@babylonjs/gui";
 import {ImitationButton} from "./ImitationButton";
+import {ImitationButtonInfo} from "./ImitationButtonInfo";
 // import SceneComponent from 'babylonjs-hook'; // if you install 'babylonjs-hook' NPM.
 
 let box;
 
-// 表示するすべての画像
+/**
+ * 表示するすべての画像
+ *
+ * @type {string[]}
+ */
 const imageNames = [
     "home",
     "balcony",
     "kitchen",
+];
+
+/**
+ * 画像に表示するボタンの情報
+ *
+ * @type {ImitationButtonInfo[][]}
+ */
+const buttonsByImageIndex = [
+  [],
+  [],
+  [
+    new ImitationButtonInfo("メッセージを表示", "メッセージ", 0, 27),
+  ],
 ];
 
 const onSceneReady = (scene) => {
@@ -47,7 +65,10 @@ const onSceneReady = (scene) => {
   let viewer = new PhotoDome("360Viewer", "./img/" + imageNames[imageNames.length - 1] + ".jpg", {}, scene);
 
   // 空間内ボタンの生成
-  let imitationButton = new ImitationButton("ImitationButton", scene, "メッセージを表示", "メッセージ", 0, 27);
+  let imitationButtons = [];
+  buttonsByImageIndex[buttonsByImageIndex.length - 1].forEach((buttonInfo, index) => {
+    imitationButtons.push(new ImitationButton("ImitationButton" + index, scene, buttonInfo));
+  });
 
   // UI表示用ダイナミックテクスチャ
   let advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("GUI");
@@ -69,6 +90,17 @@ const onSceneReady = (scene) => {
     button.onPointerClickObservable.add((e) => {
       viewer.dispose();
       viewer = new PhotoDome("360Viewer", "./img/" + name + ".jpg", {}, scene);
+
+      // 空間内ボタンの削除
+      imitationButtons.forEach((imitationButton) => {
+        imitationButton.dispose();
+      });
+      imitationButtons = [];
+
+      // 空間ボタンの表示
+      buttonsByImageIndex[index].forEach((buttonInfo, index) => {
+        imitationButtons.push(new ImitationButton("ImitationButton" + index, scene, buttonInfo));
+      });
     });
     grid.addControl(button, index, 0);
   });
