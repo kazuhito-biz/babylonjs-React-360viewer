@@ -13,6 +13,7 @@ import {
   SelectionPanel,
   SpherePanel
 } from "@babylonjs/gui";
+import {ImitationButton} from "./ImitationButton";
 // import SceneComponent from 'babylonjs-hook'; // if you install 'babylonjs-hook' NPM.
 
 let box;
@@ -45,6 +46,9 @@ const onSceneReady = (scene) => {
   // 360ビュワーを生成
   let viewer = new PhotoDome("360Viewer", "./img/" + imageNames[imageNames.length - 1] + ".jpg", {}, scene);
 
+  // 空間内ボタンの生成
+  let imitationButton = new ImitationButton("ImitationButton", scene, "メッセージを表示", "メッセージ", 0, 27);
+
   // UI表示用ダイナミックテクスチャ
   let advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("GUI");
 
@@ -63,66 +67,15 @@ const onSceneReady = (scene) => {
   imageNames.forEach((name, index) => {
     let button = Button.CreateSimpleButton(name, name);
     button.onPointerClickObservable.add((e) => {
-        viewer.dispose();
-        viewer = new PhotoDome("360Viewer", "./img/" + name + ".jpg", {}, scene);
+      viewer.dispose();
+      viewer = new PhotoDome("360Viewer", "./img/" + name + ".jpg", {}, scene);
     });
     grid.addControl(button, index, 0);
   });
 
-  // 空間内ボタンを表示
-  let gui3DManager = new GUI3DManager(scene);
-  createImitationButton(gui3DManager, "メッセージを表示", "メッセージ", 0, 27);
-
   // グリッドを表示
   advancedDynamicTexture.addControl(grid);
 };
-
-/**
- * 空間内ボタンを表示
- * @param gui3DManager
- * @param text ボタンに表示するテキスト
- * @param message ボタンクリック時のメッセージ
- * @param x 縦方向の表示角度
- * @param y 横方向の表示角度
- */
-const createImitationButton = (gui3DManager, text, message, x, y) => {
-  // 縦方向は最大90度になるよう調整
-  x = Math.max(Math.min(x, 90), -90) / 5.625;
-
-  // 横方向は最大180度になるよう調整
-  let absY = Math.abs(y);
-  if (180 < absY) {
-    y = 0 < y ? (-180 + (absY % 180)) : (180 - (absY % 180));
-  }
-  y = (y % 180) / 5.625;
-
-  // 角度と移動量の計算
-  let angle = Math.sqrt(x * x + y * y) / 10;
-  let axis = new Vector3(x, y, 0);
-
-  // 球形表示用のパネルを生成
-  let panel = new SpherePanel();
-  panel.radius = 500;
-  panel.margin = 0;
-  gui3DManager.addControl(panel);
-
-  // パネルへボタンを生成
-  panel.blockLayout = true;
-  let button = new HolographicButton("3D Button");
-  button.text = text;
-  button.scaling = new Vector3(50, 50, 50);
-  button.onPointerClickObservable.add((e) => {
-    alert(message);
-  });
-  panel.addControl(button);
-  panel.blockLayout = false;
-
-  // 角度の変更
-  let pivot = new TransformNode("root");
-  pivot.position = new Vector3(0, 0, 0);
-  panel.node.parent = pivot;
-  pivot.rotate(axis, angle, Space.WORLD);
-}
 
 /**
  * Will run on every frame render.  We are spinning the box on y-axis.
