@@ -1,16 +1,30 @@
-﻿import {TransformNode, Vector3, Space} from "@babylonjs/core";
-import {GUI3DManager, HolographicButton, SpherePanel} from "@babylonjs/gui";
+﻿import {TransformNode, Vector3} from "@babylonjs/core";
+import {GUI3DManager, HolographicButton} from "@babylonjs/gui";
 
 /**
  * 空間内へ表示するボタン
  */
 export class ImitationButton extends TransformNode {
   /**
-   * ボタン表示用のパネル
+   * ボタンを表示する半径
    *
-   * @type SpherePanel
+   * @type {number}
    */
-  panel;
+  static RADIUS = 500;
+
+  /**
+   * ボタンの大きさ
+   *
+   * @type {number}
+   */
+  static SCALE = 50;
+
+  /**
+   * ボタン表示用のコンポーネント
+   *
+   * @type HolographicButton
+   */
+  button;
 
   /**
    * コンストラクタ
@@ -21,54 +35,84 @@ export class ImitationButton extends TransformNode {
    */
   constructor(name, scene, imitationButtonInfo) {
     super(name, scene);
-
-    let text = imitationButtonInfo.text;
-    let message = imitationButtonInfo.message;
-    let x = imitationButtonInfo.x;
-    let y = imitationButtonInfo.y;
-
     let gui3DManager = new GUI3DManager(scene);
 
-    // 縦方向は最大90度になるよう調整
-    x = Math.max(Math.min(x, 90), -90) / 5.625;
+    // ボタン表示内容を取得
+    let text = imitationButtonInfo.text;
+    let message = imitationButtonInfo.message;
 
-    // 横方向は最大180度になるよう調整
-    let absY = Math.abs(y);
-    if (180 < absY) {
-      y = 0 < y ? (-180 + (absY % 180)) : (180 - (absY % 180));
-    }
-    y = (y % 180) / 5.625;
+    // ボタン描画に必要な情報を取得
+    let yawAngle = imitationButtonInfo.x;
+    let pitchAngle = imitationButtonInfo.y;
 
-    // 角度と移動量の計算
-    let angle = Math.sqrt(x * x + y * y) / 10;
-    let axis = new Vector3(x, y, 0);
-
-    // 球形表示用のパネルを生成
-    this.panel = new SpherePanel();
-    this.panel.radius = 500;
-    this.panel.margin = 0;
-    gui3DManager.addControl(this.panel);
-
-    // パネルへボタンを生成
-    this.panel.blockLayout = true;
-    let button = new HolographicButton("3D Button");
-    button.text = text;
-    button.scaling = new Vector3(50, 50, 50);
-    button.onPointerClickObservable.add((e) => {
+    // ボタンの描画
+    this.button = new HolographicButton("3D Button");
+    gui3DManager.addControl(this.button);
+    this.button.text = text;
+    this.button.scaling = new Vector3(ImitationButton.SCALE, ImitationButton.SCALE, ImitationButton.SCALE);
+    this.button.position = this.getPosition(yawAngle, pitchAngle);
+    this.button.onPointerClickObservable.add((e) => {
       alert(message);
     });
-    this.panel.addControl(button);
-    this.panel.blockLayout = false;
+  }
 
-    // 角度の変更
-    let pivot = new TransformNode("root");
-    pivot.position = new Vector3(0, 0, 0);
-    this.panel.node.parent = pivot;
-    pivot.rotate(axis, angle, Space.WORLD);
+  /**
+   * 球体上に表示するためのボタンの表示位置を取得
+   *
+   * @param {number} yawAngle 左右角度
+   * @param {number} pitchAngle 上下角度
+   * @returns {Vector3} ボタンの表示位置
+   */
+  getPosition(yawAngle, pitchAngle) {
+    // 正規化された上下と左右の角度情報を取得
+    let yaw = this.getRadian(this.getNormalizeAngle180(yawAngle));
+    let pitch = this.getRadian(this.getClamp90(pitchAngle));
+
+    // 三角関数が適用された角度情報を計算
+    let cosPitch = Math.cos(pitch);
+    let sinPitch = Math.sin(pitch);
+    let sinYaw = Math.sin(yaw);
+    let cosYaw = Math.cos(yaw);
+
+    // 最終的な角度情報を計算
+    let x = ImitationButton.RADIUS * cosPitch * sinYaw;
+    let y = ImitationButton.RADIUS * sinPitch;
+    let z = ImitationButton.RADIUS * cosPitch * cosYaw;
+    return new Vector3(x, y, z);
+  }
+
+  /**
+   * ラジアン角を取得
+   *
+   * @param {number} angle 元の角度
+   * @returns {number} ラジアン角
+   */
+  getRadian(angle) {
+    return angle * Math.PI / 180;
+  }
+
+  /**
+   * 与えられた角度を180度に収まるように補正した値を取得
+   *
+   * @param {number} angle 元の角度
+   * @returns {number} 補正された角度
+   */
+  getNormalizeAngle180(angle) {
+    return (((angle + 180) % 360) - 180);
+  }
+
+  /**
+   * 与えられた角度を90度に制限した値を取得
+   *
+   * @param {number} angle 元の角度
+   * @returns {number} 制限された角度
+   */
+  getClamp90(angle) {
+    return Math.max(Math.min(angle, 90), -90);
   }
 
   dispose(doNotRecurse, disposeMaterialAndTextures) {
     super.dispose(doNotRecurse, disposeMaterialAndTextures);
-    this.panel.dispose();
+    this.button.dispose();
   }
 }
