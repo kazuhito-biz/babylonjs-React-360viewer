@@ -1,4 +1,4 @@
-﻿import {TransformNode, Vector3} from "@babylonjs/core";
+﻿import {Axis, Space, TransformNode, Vector3} from "@babylonjs/core";
 import {GUI3DManager, HolographicButton} from "@babylonjs/gui";
 
 /**
@@ -51,6 +51,8 @@ export class ImitationButton extends TransformNode {
     this.button.text = text;
     this.button.scaling = new Vector3(ImitationButton.SCALE, ImitationButton.SCALE, ImitationButton.SCALE);
     this.button.position = this.getPosition(yawAngle, pitchAngle);
+    this.button.node.lookAt(Vector3.Zero());
+    this.button.node.rotate(Axis.Y, Math.PI, Space.LOCAL);
     this.button.onPointerClickObservable.add((e) => {
       alert(message);
     });
