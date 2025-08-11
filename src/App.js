@@ -15,19 +15,20 @@ import {
 } from "@babylonjs/gui";
 import {ImitationButton} from "./ImitationButton";
 import {ImitationButtonInfo} from "./ImitationButtonInfo";
+import {ImageButtonInfo} from "./ImageButtonInfo";
 // import SceneComponent from 'babylonjs-hook'; // if you install 'babylonjs-hook' NPM.
 
 let box;
 
 /**
- * 表示するすべての画像
+ * 表示する画像の情報
  *
- * @type {string[]}
+ * @type {ImageButtonInfo[]}
  */
-const imageNames = [
-  "balcony",
-  "kitchen",
-  "home",
+const imageInfos = [
+  new ImageButtonInfo("バルコニー", "balcony.jpg"),
+  new ImageButtonInfo("キッチン", "kitchen.jpg"),
+  new ImageButtonInfo("玄関", "home.jpg"),
 ];
 
 /**
@@ -64,7 +65,7 @@ const onSceneReady = (scene) => {
   light.intensity = 0.7;
 
   // 360ビュワーを生成
-  let viewer = new PhotoDome("360Viewer", "./img/" + imageNames[imageNames.length - 1] + ".jpg", {}, scene);
+  let viewer = new PhotoDome("360Viewer", "./img/" + imageInfos[imageInfos.length - 1].file_name, {}, scene);
   viewer.rotation = new Vector3(0, 0, 0);
 
   // 空間内ボタンの生成
@@ -78,21 +79,22 @@ const onSceneReady = (scene) => {
 
   // UI表示用グリッドの生成と設定
   let grid = new Grid();
-  imageNames.forEach(() => {
+  imageInfos.forEach(() => {
       grid.addRowDefinition(1);
   });
   grid.addColumnDefinition(1);
-  grid.width = 0.06;
-  grid.height = 0.06 * imageNames.length;
+  grid.width = '100px';
+  grid.height = (50 * imageInfos.length) + 'px';
   grid.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
   grid.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
 
   // ボタンに画像を設定
-  imageNames.forEach((name, index) => {
-    let button = Button.CreateSimpleButton(name, name);
+  imageInfos.forEach((info, index) => {
+    let button = Button.CreateSimpleButton('image_' + info.file_name, info.text);
+    button.background = "rgba(255, 255, 255, 0.5)";
     button.onPointerClickObservable.add((e) => {
       viewer.dispose();
-      viewer = new PhotoDome("360Viewer", "./img/" + name + ".jpg", {}, scene);
+      viewer = new PhotoDome("360Viewer", "./img/" + info.file_name, {}, scene);
       viewer.rotation = new Vector3(0, 0, 0);
 
       // 空間内ボタンの削除
