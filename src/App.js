@@ -25,9 +25,9 @@ let box;
  * @type {string[]}
  */
 const imageNames = [
-    "home",
-    "balcony",
-    "kitchen",
+  "balcony",
+  "kitchen",
+  "home",
 ];
 
 /**
@@ -39,7 +39,9 @@ const buttonsByImageIndex = [
   [],
   [],
   [
-    new ImitationButtonInfo("メッセージを表示", "メッセージ", 0, 27),
+    new ImitationButtonInfo("階段", "これは、階段です", -90, -5),
+    new ImitationButtonInfo("ライト", "これは、ライトです", -147, 18),
+    new ImitationButtonInfo("ドア", "これは、ドアです", 118, -23),
   ],
 ];
 
@@ -63,6 +65,7 @@ const onSceneReady = (scene) => {
 
   // 360ビュワーを生成
   let viewer = new PhotoDome("360Viewer", "./img/" + imageNames[imageNames.length - 1] + ".jpg", {}, scene);
+  viewer.rotation = new Vector3(0, 0, 0);
 
   // 空間内ボタンの生成
   let imitationButtons = [];
@@ -90,6 +93,7 @@ const onSceneReady = (scene) => {
     button.onPointerClickObservable.add((e) => {
       viewer.dispose();
       viewer = new PhotoDome("360Viewer", "./img/" + name + ".jpg", {}, scene);
+      viewer.rotation = new Vector3(0, 0, 0);
 
       // 空間内ボタンの削除
       imitationButtons.forEach((imitationButton) => {
