@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+/* リセットCSS */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* キャンバス描画 */
+.fullscreenCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* dvhサポート時は、dvhを使用 */
+@supports (height: 100dvh) {
+  html, body, #root { height: 100dvh; }
+  .fullscreenCanvas { height: 100dvh; }
+}
+
+/* dvwサポート時は、dvwを使用 */
+@supports (height: 100dvw) {
+  html, body, #root { width: 100dvw; }
+  .fullscreenCanvas { width: 100dvw; }
+}
